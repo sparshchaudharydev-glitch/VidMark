@@ -3,12 +3,13 @@ os.environ["QT_MULTIMEDIA_PREFERRED_PLUGINS"] = "windowsmediafoundation"
 
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
 from PyQt5.QtMultimediaWidgets import QVideoWidget
-from PyQt5.QtWidgets import QShortcut,QMainWindow, QWidget,QComboBox,QFrame, QVBoxLayout,QLabel, QHBoxLayout, QPushButton, QSlider,QFileDialog
+from PyQt5.QtWidgets import (QShortcut,QMainWindow,
+QWidget,QComboBox, QVBoxLayout,QLabel, QHBoxLayout, 
+QPushButton, QSlider,QFileDialog,QInputDialog)
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 from bookmark_seeker import BookmarkSeeker
 from bookmark_manager import BookmarkManager
 from bookmark import Bookmark
-from PyQt5.QtWidgets import QInputDialog
 from PyQt5.QtGui import QIcon, QKeySequence
 from PyQt5.QtCore import Qt ,QUrl,QTimer
 
@@ -18,7 +19,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.setWindowIcon(QIcon("logo.ico"))
         
-        self.setWindowTitle("VLCBook")
+        self.setWindowTitle("VidMark")
         self.resize(800, 600)
         self.init_ui()
         
@@ -85,23 +86,23 @@ class MainWindow(QMainWindow):
         
         self.change_theme("Dark Grey")
 
-        self.shortcut = QShortcut(QKeySequence(Qt.Key_Space),self)
-        self.shortcut.activated.connect(self.space_key)
+        self.shortcut_play = QShortcut(QKeySequence(Qt.Key_Space),self)
+        self.shortcut_play.activated.connect(self.space_key)
 
-        self.shortcut = QShortcut(QKeySequence(Qt.Key_Right),self)
-        self.shortcut.activated.connect(self.fast_forward)
+        self.shortcut_forward = QShortcut(QKeySequence(Qt.Key_Right),self)
+        self.shortcut_forward.activated.connect(self.fast_forward)
 
-        self.shortcut = QShortcut(QKeySequence(Qt.Key_Left),self)
-        self.shortcut.activated.connect(self.slow_down)
+        self.shortcut_backward = QShortcut(QKeySequence(Qt.Key_Left),self)
+        self.shortcut_backward.activated.connect(self.slow_down)
 
-        self.shortcut = QShortcut(QKeySequence("Ctrl+O"),self)
-        self.shortcut.activated.connect(self.open_explorer)
+        self.shortcut_open_file = QShortcut(QKeySequence("Ctrl+O"),self)
+        self.shortcut_open_file.activated.connect(self.open_explorer)
 
-        self.shortcut = QShortcut(QKeySequence("Ctrl+B"),self)
-        self.shortcut.activated.connect(self.new_bookmarkshot)
+        self.shortcut_addbookmark = QShortcut(QKeySequence("Ctrl+B"),self)
+        self.shortcut_addbookmark.activated.connect(self.new_bookmarkshot)
 
-        self.shortcut = QShortcut(QKeySequence("Ctrl+D"),self)
-        self.shortcut.activated.connect(self.delete_bookmarkshot)
+        self.shortcut_delbookmark = QShortcut(QKeySequence("Ctrl+D"),self)
+        self.shortcut_delbookmark.activated.connect(self.delete_bookmarkshot)
 
 
         self.btn_layout.setStretch(0, 1)
@@ -111,7 +112,7 @@ class MainWindow(QMainWindow):
         self.btn_layout.setStretch(5, 1)
         self.control_autohide()
              
-    def open(self):
+    def open_file(self):
         opening_file,_ = QFileDialog.getOpenFileName(self, "Open Video")
         
         if opening_file:
@@ -135,7 +136,7 @@ class MainWindow(QMainWindow):
         self.player.positionChanged.connect(self.update_slider)
         self.player.durationChanged.connect(self.set_duration)
         self.slider.sliderMoved.connect(self.seek)
-        self.open_btn.clicked.connect(self.open)
+        self.open_btn.clicked.connect(self.open_file)
         self.play_btn.clicked.connect(self.play_pause)
         self.add_bookmark_btn.clicked.connect(self.add_bookmark)
         self.delete_bookmark_btn.clicked.connect(self.delete_bookmark)
@@ -258,34 +259,14 @@ class MainWindow(QMainWindow):
         self.player.setPosition(new_position)
 
     def open_explorer(self):
-        opening_file,_ = QFileDialog.getOpenFileName(self, "Open Video")
-        
-        if opening_file:
-            self.current_filepath = opening_file
-            url = QUrl.fromLocalFile(opening_file)
-            self.player.setMedia(QMediaContent(url))
-            self.player.play()
-            loaded = self.bookmark_manager.load(self.current_filepath)
-            self.slider.set_bookmark(loaded)   
+        self.open_file()
         
     def new_bookmarkshot(self):
-        adbo = self.player.position()
-        
-        label, ok = QInputDialog.getText(self, "Add Bookmark", "Enter label:")
-        if ok and label:
-            bm = Bookmark(label=label, timestamp=adbo, filepath=self.current_filepath)
-            self.bookmark_manager.add_bookmark(bm)
-            self.slider.set_bookmark(self.bookmark_manager.load(self.current_filepath))
+        self.add_bookmark()
 
     def delete_bookmarkshot(self):
-        debo = self.player.position()
-        bookmarks = self.bookmark_manager.load(self.current_filepath)
-        if not bookmarks:
-            return
-        closest = min(bookmarks, key=lambda b: abs(b.timestamp - debo))
-        self.bookmark_manager.delete_bookmark(self.current_filepath,closest.timestamp)
-        self.slider.set_bookmark(self.bookmark_manager.load(self.current_filepath))
-        
+        self.delete_bookmark()
+
     def control_autohide(self):
 
         self.hide_timer = QTimer()

@@ -1,7 +1,7 @@
 import json
 import os
 from bookmark import Bookmark
-from typing import List
+
 from dataclasses import dataclass, asdict
 
 

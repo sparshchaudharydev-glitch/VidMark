@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QSlider, QToolTip
-from PyQt5.QtCore import Qt,QRect, pyqtSignal
+from PyQt5.QtCore import Qt, pyqtSignal
 
-from PyQt5.QtGui import QPainter, QColor, QPen
+from PyQt5.QtGui import QPainter, QColor
 
 class BookmarkSeeker(QSlider):
  
