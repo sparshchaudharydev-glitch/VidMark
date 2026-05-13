@@ -1,4 +1,4 @@
-#VLCBOOK
+#VidMark 
 A desktop video bookmark player built with Python and PyQt5.
 Drop named bookmarks at any timestamp — they persist between sessions 
 and appear as visual markers on the seekbar
