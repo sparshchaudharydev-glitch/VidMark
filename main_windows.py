@@ -15,6 +15,7 @@ class MainWindow(QMainWindow):
         
         super().__init__()
         self.setWindowIcon(QIcon("logo.ico"))
+        
         self.setWindowTitle("VLCBook")
         self.resize(800, 600)
         self.init_ui()
@@ -61,6 +62,14 @@ class MainWindow(QMainWindow):
         self.btn_layout.addWidget(self.play_btn)
         self.btn_layout.addWidget(self.add_bookmark_btn)
         self.btn_layout.addWidget(self.delete_bookmark_btn)
+    
+        self.volume_label = QLabel("🔊")
+        self.volume_slider = QSlider(Qt.Horizontal)
+        self.btn_layout.addWidget(self.volume_label)
+        self.volume_slider.setRange(0,100)
+        self.volume_slider.setValue(50)
+        
+        self.btn_layout.addWidget(self.volume_slider)
 
 
         self.theme_selector = QComboBox()
@@ -92,6 +101,12 @@ class MainWindow(QMainWindow):
         self.shortcut = QShortcut(QKeySequence("Ctrl+D"),self)
         self.shortcut.activated.connect(self.delete_bookmarkshot)
 
+
+        self.btn_layout.setStretch(0, 1)
+        self.btn_layout.setStretch(1, 1)
+        self.btn_layout.setStretch(2, 1)
+        self.btn_layout.setStretch(3, 1)
+        self.btn_layout.setStretch(5, 1)
         self.control_autohide()
              
     def open(self):
@@ -114,7 +129,7 @@ class MainWindow(QMainWindow):
             self.player.play()
             self.play_btn.setText("Pause")
                  
-    def connect_slider(self):
+    def connect_slider(self):   
         self.player.positionChanged.connect(self.update_slider)
         self.player.durationChanged.connect(self.set_duration)
         self.slider.sliderMoved.connect(self.seek)
@@ -123,7 +138,8 @@ class MainWindow(QMainWindow):
         self.add_bookmark_btn.clicked.connect(self.add_bookmark)
         self.delete_bookmark_btn.clicked.connect(self.delete_bookmark)
         self.theme_selector.currentTextChanged.connect(self.change_theme)
-             
+        self.volume_slider.valueChanged.connect(self.change_volume)      
+
     def add_bookmark(self):
         adbo = self.player.position()
         
@@ -285,8 +301,9 @@ class MainWindow(QMainWindow):
         self.theme_selector.setMouseTracking(True)
         self.current_time_label.setMouseTracking(True)
         self.total_time_label.setMouseTracking(True)
-
+        
     def hide_controls(self):
+
         self.slider.hide()
         self.current_time_label.hide()
         self.total_time_label.hide()
@@ -295,7 +312,9 @@ class MainWindow(QMainWindow):
         self.add_bookmark_btn.hide()
         self.delete_bookmark_btn.hide()
         self.theme_selector.hide()
-
+        self.volume_label.hide()
+        self.volume_slider.hide()
+       
     def show_controls(self):
 
         self.slider.show()
@@ -306,8 +325,14 @@ class MainWindow(QMainWindow):
         self.add_bookmark_btn.show()
         self.delete_bookmark_btn.show()
         self.theme_selector.show()
+        self.volume_label.show()
+        self.volume_slider.show()
 
     def mouseMoveEvent(self,ev):
+
         self.show_controls()
         self.hide_timer.start(2000)
         super().mouseMoveEvent(ev)
+
+    def change_volume(self,value):
+        self.player.setVolume(value)
