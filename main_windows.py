@@ -20,6 +20,7 @@ class MainWindow(QMainWindow):
         self.init_ui()
         
     def init_ui(self):
+        
         self.central_Widget = QWidget()
         self.setCentralWidget(self.central_Widget)
 
@@ -69,6 +70,7 @@ class MainWindow(QMainWindow):
         self.main_layout.addLayout(self.btn_layout)
         self.connect_slider()
         
+
         
         self.change_theme("Dark Grey")
 
@@ -89,7 +91,9 @@ class MainWindow(QMainWindow):
 
         self.shortcut = QShortcut(QKeySequence("Ctrl+D"),self)
         self.shortcut.activated.connect(self.delete_bookmarkshot)
-               
+
+        self.control_autohide()
+             
     def open(self):
         opening_file,_ = QFileDialog.getOpenFileName(self, "Open Video")
         
@@ -263,3 +267,47 @@ class MainWindow(QMainWindow):
         closest = min(bookmarks, key=lambda b: abs(b.timestamp - debo))
         self.bookmark_manager.delete_bookmark(self.current_filepath,closest.timestamp)
         self.slider.set_bookmark(self.bookmark_manager.load(self.current_filepath))
+        
+    def control_autohide(self):
+
+        self.hide_timer = QTimer()
+        self.hide_timer.setSingleShot(True)
+        self.hide_timer.timeout.connect(self.hide_controls)
+        self.setMouseTracking(True)
+        self.central_Widget.setMouseTracking(True)
+        self.hide_timer.start(3000)
+        self.video_widget.setMouseTracking(True)
+        self.slider.setMouseTracking(True)
+        self.open_btn.setMouseTracking(True)
+        self.play_btn.setMouseTracking(True)
+        self.add_bookmark_btn.setMouseTracking(True)
+        self.delete_bookmark_btn.setMouseTracking(True)
+        self.theme_selector.setMouseTracking(True)
+        self.current_time_label.setMouseTracking(True)
+        self.total_time_label.setMouseTracking(True)
+
+    def hide_controls(self):
+        self.slider.hide()
+        self.current_time_label.hide()
+        self.total_time_label.hide()
+        self.open_btn.hide()
+        self.play_btn.hide()
+        self.add_bookmark_btn.hide()
+        self.delete_bookmark_btn.hide()
+        self.theme_selector.hide()
+
+    def show_controls(self):
+
+        self.slider.show()
+        self.current_time_label.show()
+        self.total_time_label.show()
+        self.open_btn.show()
+        self.play_btn.show()
+        self.add_bookmark_btn.show()
+        self.delete_bookmark_btn.show()
+        self.theme_selector.show()
+
+    def mouseMoveEvent(self,ev):
+        self.show_controls()
+        self.hide_timer.start(2000)
+        super().mouseMoveEvent(ev)

@@ -4,8 +4,7 @@ from PyQt5.QtCore import Qt,QRect, pyqtSignal
 from PyQt5.QtGui import QPainter, QColor, QPen
 
 class BookmarkSeeker(QSlider):
-
-    
+ 
     bookmark_clicked = pyqtSignal(int,str)
 
     def __init__(self):
@@ -48,6 +47,8 @@ class BookmarkSeeker(QSlider):
     def set_marker_color(self,color):
         self.marker_color = QColor(color)
         self.update()
+    
+    
 
     
         
