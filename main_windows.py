@@ -1,4 +1,6 @@
-import sys
+import os
+os.environ["QT_MULTIMEDIA_PREFERRED_PLUGINS"] = "windowsmediafoundation"
+
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 from PyQt5.QtWidgets import QShortcut,QMainWindow, QWidget,QComboBox,QFrame, QVBoxLayout,QLabel, QHBoxLayout, QPushButton, QSlider,QFileDialog
