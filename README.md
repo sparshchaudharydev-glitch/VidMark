@@ -16,7 +16,7 @@ and appear as visual markers on the seekbar
 ## How to Run
 
 ### Option 1 — Download the exe
-Download VidMark.exe` from the releases page and run it directly. No installation needed.
+Download `VidMark.exe` from the releases page and run it directly. No installation needed.
 
 ### Option 2 — Run from source
 1. Clone the repo
