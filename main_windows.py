@@ -18,7 +18,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.setWindowIcon(QIcon("logo.ico"))
         
-        self.setWindowTitle("VLCBook")
+        self.setWindowTitle("VidMark")
         self.resize(800, 600)
         self.init_ui()
         
