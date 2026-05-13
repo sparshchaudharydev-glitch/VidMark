@@ -1,13 +1,13 @@
 import sys
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
 from PyQt5.QtMultimediaWidgets import QVideoWidget
-from PyQt5.QtWidgets import QMainWindow, QWidget,QComboBox,QFrame, QVBoxLayout,QLabel, QHBoxLayout, QPushButton, QSlider,QFileDialog
+from PyQt5.QtWidgets import QShortcut,QMainWindow, QWidget,QComboBox,QFrame, QVBoxLayout,QLabel, QHBoxLayout, QPushButton, QSlider,QFileDialog
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 from bookmark_seeker import BookmarkSeeker
 from bookmark_manager import BookmarkManager
 from bookmark import Bookmark
 from PyQt5.QtWidgets import QInputDialog
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QKeySequence
 from PyQt5.QtCore import Qt ,QUrl,QTimer
 
 class MainWindow(QMainWindow):
@@ -60,12 +60,13 @@ class MainWindow(QMainWindow):
 
         
         self.btn_layout.addWidget(self.open_btn)
+        self.btn_layout.addWidget(self.play_btn)
         self.btn_layout.addWidget(self.add_bookmark_btn)
         self.btn_layout.addWidget(self.delete_bookmark_btn)
         
 
         
-        self.btn_layout.addWidget(self.play_btn)
+        
         self.theme_selector = QComboBox()
         self.theme_selector.addItems(["Dark Grey" , "Pure Black" , "Light"])
         self.btn_layout.addWidget(self.theme_selector)
@@ -75,6 +76,15 @@ class MainWindow(QMainWindow):
         
         
         self.change_theme("Dark Grey")
+
+        self.shortcut = QShortcut(QKeySequence(Qt.Key_Space),self)
+        self.shortcut.activated.connect(self.space_key)
+
+        self.shortcut = QShortcut(QKeySequence(Qt.Key_Right),self)
+        self.shortcut.activated.connect(self.fast_forward)
+
+        self.shortcut = QShortcut(QKeySequence(Qt.Key_Left),self)
+        self.shortcut.activated.connect(self.slow_down)       
                
     def open(self):
         opening_file,_ = QFileDialog.getOpenFileName(self, "Open Video")
@@ -105,8 +115,7 @@ class MainWindow(QMainWindow):
         self.add_bookmark_btn.clicked.connect(self.add_bookmark)
         self.delete_bookmark_btn.clicked.connect(self.delete_bookmark)
         self.theme_selector.currentTextChanged.connect(self.change_theme)
-       
-        
+             
     def add_bookmark(self):
         adbo = self.player.position()
         
@@ -188,7 +197,6 @@ class MainWindow(QMainWindow):
         remaining = seconds % 60
         return f"{minutes}:{remaining:02d}"
         
-
     def update_slider(self,position):
         if not hasattr(self, 'duration'): return
         
@@ -205,3 +213,23 @@ class MainWindow(QMainWindow):
     def seek(self, position):
         self.player.setPosition(position)
 
+    def space_key(self):
+        if self.player.state() == QMediaPlayer.PlayingState:
+            self.player.pause()
+        else:
+            self.player.play()
+            
+    def fast_forward(self):
+        
+        new_position = self.player.position() + 5000
+        
+        self.player.setPosition(new_position)
+
+    def slow_down(self):
+        
+        new_position = self.player.position() - 5000
+        
+        self.player.setPosition(new_position)
+
+
+        
