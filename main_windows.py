@@ -17,8 +17,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         
         super().__init__()
-        self.setWindowIcon(QIcon("logo.ico"))
-        
+        self.setWindowIcon(QIcon("logo.ico"))  
         self.setWindowTitle("VidMark")
         self.resize(800, 600)
         self.init_ui()
@@ -28,7 +27,7 @@ class MainWindow(QMainWindow):
         self.central_Widget = QWidget()
         self.setCentralWidget(self.central_Widget)
 
-        
+        #
         self.main_layout = QVBoxLayout()
         self.central_Widget.setLayout(self.main_layout)
         
@@ -101,8 +100,8 @@ class MainWindow(QMainWindow):
         self.shortcut_addbookmark = QShortcut(QKeySequence("Ctrl+B"),self)
         self.shortcut_addbookmark.activated.connect(self.new_bookmarkshot)
 
-        self.shortcut_delbookmark = QShortcut(QKeySequence("Ctrl+D"),self)
-        self.shortcut_delbookmark.activated.connect(self.delete_bookmarkshot)
+        self.shortcut_delete_bookmark = QShortcut(QKeySequence("Ctrl+D"),self)
+        self.shortcut_delete_bookmark.activated.connect(self.delete_bookmarkshot)
 
 
         self.btn_layout.setStretch(0, 1)
@@ -120,8 +119,8 @@ class MainWindow(QMainWindow):
             url = QUrl.fromLocalFile(opening_file)
             self.player.setMedia(QMediaContent(url))
             self.player.play()
-            loaded = self.bookmark_manager.load(self.current_filepath)
-            self.slider.set_bookmark(loaded)
+            load_bookmarkpath = self.bookmark_manager.load(self.current_filepath)
+            self.slider.set_bookmark(load_bookmarkpath)
         
     def play_pause(self):
         if self.player.state() == QMediaPlayer.PlayingState:
@@ -144,33 +143,33 @@ class MainWindow(QMainWindow):
         self.volume_slider.valueChanged.connect(self.change_volume)      
 
     def add_bookmark(self):
-        adbo = self.player.position()
+        fetch_timestamp = self.player.position()
         
         label, ok = QInputDialog.getText(self, "Add Bookmark", "Enter label:")
         if ok and label:
-            bm = Bookmark(label=label, timestamp=adbo, filepath=self.current_filepath)
+            bm = Bookmark(label=label, timestamp=fetch_timestamp, filepath=self.current_filepath)
             self.bookmark_manager.add_bookmark(bm)
             self.slider.set_bookmark(self.bookmark_manager.load(self.current_filepath))
 
     def delete_bookmark(self):
-        debo = self.player.position()
+        fetch_position = self.player.position()
         bookmarks = self.bookmark_manager.load(self.current_filepath)
         if not bookmarks:
             return
-        closest = min(bookmarks, key=lambda b: abs(b.timestamp - debo))
-        self.bookmark_manager.delete_bookmark(self.current_filepath,closest.timestamp)
+        delete_closestbookmark = min(bookmarks, key=lambda b: abs(b.timestamp - fetch_position))
+        self.bookmark_manager.delete_bookmark(self.current_filepath,delete_closestbookmark.timestamp)
         self.slider.set_bookmark(self.bookmark_manager.load(self.current_filepath))
 
     def change_theme(self,theme):
         if theme == "Dark Grey":
             self.setStyleSheet("""
                 QWidget { background-color: #2b2b2b; }
-                QPushButton { font-weight: bold }                
+                QPushButton { font-weight: bold ; background-color: #3c3f41; color: white; }                
                 QPushButton { background-color: #3c3f41; color: white; }
                 QPushButton:hover { background-color: #4c5052; }
-                QSlider::groove:horizontal { background-color: #ff8c00; height: 16px; }
+                QSlider::groove:horizontal { background-color: #ff8c00;  }
                 QSlider::handle:horizontal { background-color: white;}
-                QSlider::handle:horizontal {width: 32px; height: 16px; border-radius: 8px;}
+                QSlider::handle:horizontal {border-radius: 8px;}
                 QComboBox { background-color: white; color: black; }
                 QComboBox {font-weight: bold}
                 QInputDialog { background-color: #111111; color: white; }
@@ -189,9 +188,9 @@ class MainWindow(QMainWindow):
                 QPushButton { font-weight: bold }     
                 QPushButton { background-color: white; color: black;}
                 QPushButton:hover { background-color: #868686; }
-                QSlider::groove:horizontal { background-color: #1CC5E3; height: 16px; }
+                QSlider::groove:horizontal { background-color: #ff8c00;  }
                 QSlider::handle:horizontal { background-color: white;}
-                QSlider::handle:horizontal {width: 32px; height: 16px; border-radius: 8px;}
+                QSlider::handle:horizontal {border-radius: 8px;}
                 QComboBox { background-color: white; color: black; }
                 QComboBox {font-weight: bold}
                 QInputDialog { background-color: #111111; color: white; }
@@ -208,9 +207,9 @@ class MainWindow(QMainWindow):
                 QPushButton { font-weight: bold }          
                 QPushButton { background-color: #E7E7E7; color: black; }
                 QPushButton:hover { background-color: #FFFFFF; }
-                QSlider::groove:horizontal { background-color: black; height: 16px; }
-                QSlider::handle:horizontal { background-color: #EC1313;  }
-                QSlider::handle:horizontal {width: 32px; height: 16px; border-radius: 8px;}
+                QSlider::groove:horizontal { background-color: #ff8c00;  }
+                QSlider::handle:horizontal { background-color: white;}
+                QSlider::handle:horizontal {border-radius: 8px;}
                 QComboBox { background-color: white; color: black; }
                 QComboBox {font-weight: bold}
                 QComboBox QAbstractItemView{background-color:white; color-black}  
