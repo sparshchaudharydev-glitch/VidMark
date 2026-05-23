@@ -5,7 +5,7 @@ from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 from PyQt5.QtWidgets import (QShortcut,QMainWindow,
 QWidget,QComboBox, QVBoxLayout,QLabel, QHBoxLayout, 
-QPushButton, QSlider,QFileDialog,QInputDialog)
+QPushButton, QSlider,QFileDialog,QInputDialog , QListWidget )
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 from bookmark_seeker import BookmarkSeeker
 from bookmark_manager import BookmarkManager
@@ -27,7 +27,7 @@ class MainWindow(QMainWindow):
         self.central_Widget = QWidget()
         self.setCentralWidget(self.central_Widget)
 
-        #
+
         self.main_layout = QVBoxLayout()
         self.central_Widget.setLayout(self.main_layout)
         
@@ -35,6 +35,17 @@ class MainWindow(QMainWindow):
         self.main_layout.addWidget(self.video_widget)
         self.main_layout.setStretchFactor(self.video_widget, 1)
 
+
+        self.bookmark_list = QListWidget()
+        self.bookmark_list.setFixedWidth(200)
+        self.bookmark_list.hide()
+
+
+        self.content_layout = QHBoxLayout()
+        self.content_layout.addWidget(self.video_widget)
+        self.content_layout.addWidget(self.bookmark_list)
+        self.content_layout.setStretchFactor(self.video_widget, 1)
+        self.main_layout.addLayout(self.content_layout)
       
         self.player = QMediaPlayer()
         self.player.setVideoOutput(self.video_widget)
@@ -57,7 +68,9 @@ class MainWindow(QMainWindow):
         self.play_btn = QPushButton("Play")
         self.add_bookmark_btn = QPushButton("Add Bookmark")
         self.delete_bookmark_btn = QPushButton("Delete Bookmark")
+        self.bookmark_list_btn = QPushButton("📋")
         self.bookmark_manager = BookmarkManager()
+
 
 
         self.btn_layout.addWidget(self.open_btn)
@@ -140,7 +153,8 @@ class MainWindow(QMainWindow):
         self.add_bookmark_btn.clicked.connect(self.add_bookmark)
         self.delete_bookmark_btn.clicked.connect(self.delete_bookmark)
         self.theme_selector.currentTextChanged.connect(self.change_theme)
-        self.volume_slider.valueChanged.connect(self.change_volume)      
+        self.volume_slider.valueChanged.connect(self.change_volume)  
+        self.bookmark_list_btn.clicked.connect(self.bookmark_panel)    
 
     def add_bookmark(self):
         fetch_timestamp = self.player.position()
@@ -318,3 +332,6 @@ class MainWindow(QMainWindow):
 
     def change_volume(self,value):
         self.player.setVolume(value)
+
+    def bookmark_panel(self):
+        pass
