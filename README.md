@@ -9,6 +9,7 @@ and appear as visual markers on the seekbar
 - 📍 Visual markers on seekbar showing bookmark positions
 - 🖱️ Hover over markers to see bookmark label
 - ⏩ Click a marker to jump to that timestamp
+- 📖 Able to view all the bookmark at one place and jump to a specific one
 - 🎨 Theme switcher (Dark Grey, Pure Black, Light)
 - ⏱️ Timestamp display
 
