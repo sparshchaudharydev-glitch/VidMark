@@ -5,7 +5,7 @@ from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 from PyQt5.QtWidgets import (QShortcut,QMainWindow,
 QWidget,QComboBox, QVBoxLayout,QLabel, QHBoxLayout, 
-QPushButton, QSlider,QFileDialog,QInputDialog , QListWidget )
+QPushButton, QSlider,QFileDialog,QInputDialog , QListWidget,QListWidgetItem )
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 from bookmark_seeker import BookmarkSeeker
 from bookmark_manager import BookmarkManager
@@ -32,8 +32,7 @@ class MainWindow(QMainWindow):
         self.central_Widget.setLayout(self.main_layout)
         
         self.video_widget = QVideoWidget()
-        self.main_layout.addWidget(self.video_widget)
-        self.main_layout.setStretchFactor(self.video_widget, 1)
+        
 
 
         self.bookmark_list = QListWidget()
@@ -46,6 +45,7 @@ class MainWindow(QMainWindow):
         self.content_layout.addWidget(self.bookmark_list)
         self.content_layout.setStretchFactor(self.video_widget, 1)
         self.main_layout.addLayout(self.content_layout)
+        self.main_layout.setStretchFactor(self.content_layout, 1)
       
         self.player = QMediaPlayer()
         self.player.setVideoOutput(self.video_widget)
@@ -69,6 +69,7 @@ class MainWindow(QMainWindow):
         self.add_bookmark_btn = QPushButton("Add Bookmark")
         self.delete_bookmark_btn = QPushButton("Delete Bookmark")
         self.bookmark_list_btn = QPushButton("📋")
+        
         self.bookmark_manager = BookmarkManager()
 
 
@@ -77,6 +78,7 @@ class MainWindow(QMainWindow):
         self.btn_layout.addWidget(self.play_btn)
         self.btn_layout.addWidget(self.add_bookmark_btn)
         self.btn_layout.addWidget(self.delete_bookmark_btn)
+        self.btn_layout.addWidget(self.bookmark_list_btn)
     
         self.volume_label = QLabel("🔊")
         self.volume_slider = QSlider(Qt.Horizontal)
@@ -85,7 +87,7 @@ class MainWindow(QMainWindow):
         self.volume_slider.setValue(50)
         
         self.btn_layout.addWidget(self.volume_slider)
-
+        
 
         self.theme_selector = QComboBox()
         self.theme_selector.addItems(["Dark Grey" , "Pure Black" , "Light"])
@@ -121,7 +123,13 @@ class MainWindow(QMainWindow):
         self.btn_layout.setStretch(1, 1)
         self.btn_layout.setStretch(2, 1)
         self.btn_layout.setStretch(3, 1)
-        self.btn_layout.setStretch(5, 1)
+        self.btn_layout.setStretch(4, 1)
+        self.btn_layout.setStretch(6, 1)
+        
+
+        
+        
+
         self.control_autohide()
              
     def open_file(self):
@@ -134,6 +142,7 @@ class MainWindow(QMainWindow):
             self.player.play()
             load_bookmarkpath = self.bookmark_manager.load(self.current_filepath)
             self.slider.set_bookmark(load_bookmarkpath)
+            self.update_bookmark_list()
         
     def play_pause(self):
         if self.player.state() == QMediaPlayer.PlayingState:
@@ -155,6 +164,8 @@ class MainWindow(QMainWindow):
         self.theme_selector.currentTextChanged.connect(self.change_theme)
         self.volume_slider.valueChanged.connect(self.change_volume)  
         self.bookmark_list_btn.clicked.connect(self.bookmark_panel)    
+        self.bookmark_list.itemClicked.connect(self.seek_from_list)
+        self.bookmark_list.itemClicked.connect(self.seek_from_list)
 
     def add_bookmark(self):
         fetch_timestamp = self.player.position()
@@ -164,6 +175,7 @@ class MainWindow(QMainWindow):
             bm = Bookmark(label=label, timestamp=fetch_timestamp, filepath=self.current_filepath)
             self.bookmark_manager.add_bookmark(bm)
             self.slider.set_bookmark(self.bookmark_manager.load(self.current_filepath))
+            self.update_bookmark_list()
 
     def delete_bookmark(self):
         fetch_position = self.player.position()
@@ -173,6 +185,7 @@ class MainWindow(QMainWindow):
         delete_closestbookmark = min(bookmarks, key=lambda b: abs(b.timestamp - fetch_position))
         self.bookmark_manager.delete_bookmark(self.current_filepath,delete_closestbookmark.timestamp)
         self.slider.set_bookmark(self.bookmark_manager.load(self.current_filepath))
+        self.update_bookmark_list()
 
     def change_theme(self,theme):
         if theme == "Dark Grey":
@@ -181,9 +194,9 @@ class MainWindow(QMainWindow):
                 QPushButton { font-weight: bold ; background-color: #3c3f41; color: white; }                
                 QPushButton { background-color: #3c3f41; color: white; }
                 QPushButton:hover { background-color: #4c5052; }
-                QSlider::groove:horizontal { background-color: #ff8c00;  }
+                QSlider::groove:horizontal { background-color: #ff8c00; height: 10px;    }
                 QSlider::handle:horizontal { background-color: white;}
-                QSlider::handle:horizontal {border-radius: 8px;}
+                QSlider::handle:horizontal {border-radius: 8px; width: 20px; height: 16px;}
                 QComboBox { background-color: white; color: black; }
                 QComboBox {font-weight: bold}
                 QInputDialog { background-color: #111111; color: white; }
@@ -191,7 +204,8 @@ class MainWindow(QMainWindow):
                 QLabel { color: white; }
                 QComboBox QAbstractItemView{background-color:white; color-black}
                 QComboBox { outline: none; border: 1px solid #555; }
-                
+                QListWidget { background-color: #3c3f41; color: white; }
+                QListWidget::item:selected { background-color: #555555; }
             """)
             self.slider.set_marker_color("white")
         
@@ -204,7 +218,7 @@ class MainWindow(QMainWindow):
                 QPushButton:hover { background-color: #868686; }
                 QSlider::groove:horizontal { background-color: #ff8c00;  }
                 QSlider::handle:horizontal { background-color: white;}
-                QSlider::handle:horizontal {border-radius: 8px;}
+                QSlider::handle:horizontal {border-radius: 8px; width: 20px; height: 16px;}
                 QComboBox { background-color: white; color: black; }
                 QComboBox {font-weight: bold}
                 QInputDialog { background-color: #111111; color: white; }
@@ -212,7 +226,8 @@ class MainWindow(QMainWindow):
                 QLabel { color: white; }
                 QComboBox QAbstractItemView{background-color:white; color-black}
                 QComboBox { outline: none; border: 1px solid #555; }
-                                 
+                QListWidget { background-color: #111111; color: white; }
+                QListWidget::item:selected { background-color: #333333; }                 
             """)
             self.slider.set_marker_color("orange")
         else:
@@ -223,11 +238,13 @@ class MainWindow(QMainWindow):
                 QPushButton:hover { background-color: #FFFFFF; }
                 QSlider::groove:horizontal { background-color: #ff8c00;  }
                 QSlider::handle:horizontal { background-color: white;}
-                QSlider::handle:horizontal {border-radius: 8px;}
+                QSlider::handle:horizontal {border-radius: 8px; width: 20px; height: 16px;}
                 QComboBox { background-color: white; color: black; }
                 QComboBox {font-weight: bold}
                 QComboBox QAbstractItemView{background-color:white; color-black}  
-                QComboBox { outline: none; border: 1px solid #555; }        
+                QComboBox { outline: none; border: 1px solid #555; }
+                QListWidget { background-color: #f0f0f0; color: black; }
+                QListWidget::item:selected { background-color: #0078d4; color: white; }        
             """)
             self.slider.set_marker_color("orange")
         
@@ -310,6 +327,7 @@ class MainWindow(QMainWindow):
         self.theme_selector.hide()
         self.volume_label.hide()
         self.volume_slider.hide()
+        self.bookmark_list_btn.hide()
        
     def show_controls(self):
 
@@ -323,6 +341,7 @@ class MainWindow(QMainWindow):
         self.theme_selector.show()
         self.volume_label.show()
         self.volume_slider.show()
+        self.bookmark_list_btn.show()
 
     def mouseMoveEvent(self,ev):
 
@@ -334,4 +353,21 @@ class MainWindow(QMainWindow):
         self.player.setVolume(value)
 
     def bookmark_panel(self):
-        pass
+        if self.bookmark_list.isVisible():
+            self.bookmark_list.hide()
+        else:
+            self.bookmark_list.show()
+
+    def update_bookmark_list(self):
+        check_book = self.bookmark_manager.load(self.current_filepath)
+        print(check_book)
+        self.bookmark_list.clear()
+        for i in check_book:
+            items  = QListWidgetItem(f"{self.format_time(i.timestamp)} - {i.label}")
+            items.setData(Qt.UserRole , i.timestamp)
+            self.bookmark_list.addItem(items)
+
+    def seek_from_list(self,item):
+        timestamp = item.data(Qt.UserRole)
+        self.player.setPosition(timestamp)
+
