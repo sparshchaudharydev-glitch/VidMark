@@ -216,7 +216,7 @@ class MainWindow(QMainWindow):
                 QPushButton { font-weight: bold }     
                 QPushButton { background-color: white; color: black;}
                 QPushButton:hover { background-color: #868686; }
-                QSlider::groove:horizontal { background-color: #ff8c00;  }
+                QSlider::groove:horizontal { background-color: #ff8c00; height: 10px;  }
                 QSlider::handle:horizontal { background-color: white;}
                 QSlider::handle:horizontal {border-radius: 8px; width: 20px; height: 16px;}
                 QComboBox { background-color: white; color: black; }
@@ -236,7 +236,7 @@ class MainWindow(QMainWindow):
                 QPushButton { font-weight: bold }          
                 QPushButton { background-color: #E7E7E7; color: black; }
                 QPushButton:hover { background-color: #FFFFFF; }
-                QSlider::groove:horizontal { background-color: #ff8c00;  }
+                QSlider::groove:horizontal { background-color: #ff8c00; height: 10px;  }
                 QSlider::handle:horizontal { background-color: white;}
                 QSlider::handle:horizontal {border-radius: 8px; width: 20px; height: 16px;}
                 QComboBox { background-color: white; color: black; }
